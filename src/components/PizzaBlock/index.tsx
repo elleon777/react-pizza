@@ -1,14 +1,47 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { addItem, selectTotalCountPizza, TCartItem } from '../../redux/slices/cartSlice';
 
-function PizzaBlock({ title, price, imageUrl, sizes, types }) {
+type TPizzaBlockProps = {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+  types: number[];
+  sizes: number[];
+  count: number;
+};
+
+const PizzaBlock: React.FC<TPizzaBlockProps> = ({ id, title, price, imageUrl, sizes, types }) => {
+  
   const [activeType, setActiveType] = React.useState(0);
   const [activeSize, setActiveSize] = React.useState(0);
   const typeNames = ['тонкое', 'традиционное'];
 
+  const dispatch = useDispatch();
+  const totalCountPizza = useSelector(selectTotalCountPizza(id));
+
+  const onClickAdd = () => {
+    const item: TCartItem = {
+      id,
+      title,
+      price,
+      imageUrl,
+      type: typeNames[activeType],
+      size: sizes[activeSize],
+      count: 0,
+    };
+    dispatch(addItem(item));
+  };
+
   return (
     <div className="pizza-block">
-      <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
-      <h4 className="pizza-block__title">{title}</h4>
+      <Link key={id} to={`/pizza/${id}`}>
+        <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
+        <h4 className="pizza-block__title">{title}</h4>
+      </Link>
+
       <div className="pizza-block__selector">
         <ul>
           {types.map((typeId) => (
@@ -33,7 +66,7 @@ function PizzaBlock({ title, price, imageUrl, sizes, types }) {
       </div>
       <div className="pizza-block__bottom">
         <div className="pizza-block__price">от {price} ₽</div>
-        <button className="button button--outline button--add">
+        <button onClick={onClickAdd} className="button button--outline button--add">
           <svg
             width="12"
             height="12"
@@ -46,11 +79,11 @@ function PizzaBlock({ title, price, imageUrl, sizes, types }) {
             />
           </svg>
           <span>Добавить</span>
-          <i>0</i>
+          {totalCountPizza > 0 && <i>{totalCountPizza}</i>}
         </button>
       </div>
     </div>
   );
-}
+};
 
 export default PizzaBlock;
