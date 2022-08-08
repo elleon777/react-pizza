@@ -3,9 +3,18 @@ import axios from 'axios';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 
+import { TSort } from './filterSlice';
+
 // type TFetchPizzasArgs = Record<string, string>; //говорит что объект со строчками
 
-export const fetchPizzas = createAsyncThunk<TCartItem[], Record<string, string>>(
+type TSearchPizzaParams = {
+  categoryId: number;
+  sort: TSort;
+  currentPage: string;
+  search: string;
+};
+
+export const fetchPizzas = createAsyncThunk<TCartItem[], TSearchPizzaParams>(
   'pizza/fetchPizzasStatus',
   async (params) => {
     const { categoryId, sort, currentPage, search } = params;
@@ -20,16 +29,18 @@ export const fetchPizzas = createAsyncThunk<TCartItem[], Record<string, string>>
 
 type TPizza = {
   id: string;
-  title: string;
-  price: number;
   imageUrl: string;
+  title: string;
   types: number[];
   sizes: number[];
+  price: number;
+  category: number;
+  rating: number;
   count: number;
 };
 
 interface IPizzaSliceState {
-  items: TPizza;
+  items: TPizza[];
   status: 'loading' | 'success' | 'error';
 }
 
@@ -41,24 +52,25 @@ const initialState: IPizzaSliceState = {
 const pizzaSlice = createSlice({
   name: 'pizza',
   initialState,
+  reducers: {},
   extraReducers: {
-    [fetchPizzas.pending]: (state) => {
-      state.status = 'loading';
-      state.items = [];
-    },
-    [fetchPizzas.fulfilled]: (state, action) => {
-      state.status = 'success';
-      state.items = action.payload;
-    },
-    [fetchPizzas.rejected]: (state) => {
-      state.status = 'error';
-      state.items = [];
-    },
+    // [fetchPizzas.pending]: (state) => {
+    //   state.status = 'loading';
+    //   state.items = [];
+    // },
+    // [fetchPizzas.fulfilled]: (state, action) => {
+    //   state.status = 'success';
+    //   state.items = action.payload;
+    // },
+    // [fetchPizzas.rejected]: (state) => {
+    //   state.status = 'error';
+    //   state.items = [];
+    // },
   },
 });
 
 export const selectPizzaData = (state: RootState) => state.pizza;
 
-export const { setItems } = pizzaSlice.actions;
+// export const { setItems } = pizzaSlice.actions;
 
 export default pizzaSlice.reducer;

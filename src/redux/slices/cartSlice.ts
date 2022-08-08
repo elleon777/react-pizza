@@ -52,13 +52,12 @@ const cartSlice = createSlice({
           obj.type === action.payload.type &&
           obj.size === action.payload.size,
       );
-      // if (findItem.count === 1) {
-      //   findItem.count = 1;
-      //   return;
-      // }
-
       if (findItem) {
         findItem.count--;
+      }
+      if (findItem.count === 1) {
+        findItem.count = 1;
+        return;
       }
 
       state.totalPrice = state.items.reduce((sum, obj) => {
@@ -86,7 +85,7 @@ const cartSlice = createSlice({
       state.totalPrice = 0;
     },
   },
-}); 
+});
 
 export const selectCart = (state: RootState) => state.cart;
 export const selectTotalCountPizza = (id: string) => (state: RootState) =>
